@@ -12,9 +12,9 @@ wordlist = '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt'
 extensions = ',php,html,txt,md,sh,py'
 
 helptext = ("""
-Auto recon tool
+Telescope: Auto recon tool
 
-This tool depends on gobuster and nmap in
+This tool depends on gobuster and nmap.
 
 Flags:
     -h, --help\t\t\tShows this help
@@ -182,6 +182,7 @@ def main():
         if os.geteuid() != 0:
             vprint(0, "TELESC", "Some scans require root privileges, please run as root")
             return
+            
         parse_arugments()
 
         if show_banner:
