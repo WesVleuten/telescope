@@ -19,6 +19,7 @@ This tool depends on gobuster and nmap.
 Flags:
     -h, --help\t\t\tShows this help
     -t, --target IP\t\tTarget ip address
+    -o, --output DIR\t\tOutput directory, defaults to "telescope"
     -P, --no-ping\t\tSkips ping check on all nmap scans
     -b, --no-banner\t\tSkips showing the telescope banner
         --verbosity LEVEL\t\tSets the verbosity 0-5
@@ -95,10 +96,11 @@ def parse_arugments():
             print(helptext)
             sys.exit(1)
         elif current_argument in ("-o", "--output"):
-            vprint(3, "TELESC", ("Enabling special output mode (%s)") % (current_value))
+            vprint(3, "TELESC", ("Setting output directory (%s)") % (current_value))
+            output_dir = current_value
         elif current_argument in ("-t", "--target"):
-            target = current_value
             vprint(3, "TELESC", ("Setting target to %s") % (target))
+            target = current_value
         elif current_argument in ("-d", "--depth"):
             vprint(3, "TELESC", ("Setting gobuster depth to %s") % (current_value))
             depth = current_value
@@ -182,7 +184,7 @@ def main():
         if os.geteuid() != 0:
             vprint(0, "TELESC", "Some scans require root privileges, please run as root")
             return
-            
+
         parse_arugments()
 
         if show_banner:
