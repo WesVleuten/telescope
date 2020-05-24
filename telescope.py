@@ -136,14 +136,18 @@ def getwebports():
     root = ET.parse('%s/nmap-quickscan.xml' % output_dir).getroot()
     for port in root.findall('./host/ports/port'):
         portid = port.attrib['portid']
-        service = port.findall('./service')[0].attrib['name']
-        if service == 'http-proxy': service = 'http'
-        if service == 'https-proxy': service = 'https'
-        if service in ['http', 'https']:
-            webs.append({
-                'protocol': service,
-                'portid': portid
-            })
+        services = port.findall('./service');
+        if len(services) == 0:
+            continue
+        for service in services:
+            servicename = service.attrib['name']
+            if servicename == 'http-proxy': servicename = 'http'
+            if servicename == 'https-proxy': servicename = 'https'
+            if servicename in ['http', 'https']:
+                webs.append({
+                    'protocol': servicename,
+                    'portid': portid
+                })
     return webs
 
 def gobuster(protocol='http', targetport=80, targeturi=''):
@@ -153,7 +157,7 @@ def gobuster(protocol='http', targetport=80, targeturi=''):
     filename = 'root'
     if targeturi != '':
         filename = targeturi.replace('/', '-')
-    cmd = "gobuster dir -qfazk -t 5 --timeout 5s -x %s -o %s/gobuster-%s.txt -u \"%s\" -w %s" % (extensions, output_dir, filename, url, wordlist)
+    cmd = "gobuster dir -qfazk -t 40 --timeout 5s -x %s -o %s/gobuster-%s.txt -u \"%s\" -w %s" % (extensions, output_dir, filename, url, wordlist)
     vprint(0, "GOBUST", "Staring %s" % url)
 
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -161,7 +165,6 @@ def gobuster(protocol='http', targetport=80, targeturi=''):
         line = process.stdout.readline().rstrip().decode("utf-8")
         if not line:
             break
-        # print(len(line), line[0], line)
         vprint(0, "GOBUST", "%s%s" % (url, line[1:]))
         
         if len(line) > 10:
